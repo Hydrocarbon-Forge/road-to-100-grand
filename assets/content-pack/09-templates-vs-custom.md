@@ -1,0 +1,1 @@
+Templates are fine until the business outgrows them: slow loads, generic structure, plugin sprawl. Custom pays off when one conversion goal matters — calls, bookings, or quote requests — and someone owns launch end to end.

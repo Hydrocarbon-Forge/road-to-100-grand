@@ -1,0 +1,1 @@
+Fixed pricing beats hourly for small sites. The client knows the total upfront, and you get rewarded for working fast instead of punished. Scope pages + features in writing, include 2 revision rounds, quote extras separately.

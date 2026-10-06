@@ -1,0 +1,1 @@
+Track outreach in a plain spreadsheet: date, prospect, channel, template, reply, call, close. Review weekly. After 50 pitches you'll know which message works. Most beginners quit before the data arrives.

@@ -1,0 +1,1 @@
+Cold outreach works when the first two lines prove you looked. Name one specific thing on their site, suggest one concrete fix, ask one small question. Templates handle structure; specifics earn the reply.

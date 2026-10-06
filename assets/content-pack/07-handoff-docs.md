@@ -1,0 +1,1 @@
+Ship a handoff doc with every site: hosting logins, deploy steps, how to edit text and images, third-party services. It cuts support messages in half and makes you look like a professional studio of one.

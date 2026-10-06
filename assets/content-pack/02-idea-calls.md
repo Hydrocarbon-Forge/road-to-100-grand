@@ -1,0 +1,1 @@
+Free consults attract tire-kickers. I charge $5 for a 60-min idea call: we map pages, features, and content, and the client keeps the plan. Serious people say yes, time-wasters filter themselves. Credited toward the build.

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<!--
+  REBUILT 2026-10-02 (Batch 2): original Batch-1 file lost to an environment
+  wipe; rebuilt to the documented spec (SUMMARY.md + index.html sample):
+  $150 base + pages x $80 + features + revisions, rush option, 50/50 deposit
+  split, timeline estimate, copy-for-proposal button. Works offline, no CDNs.
+  Price constants at the top of the script section are STARTING POINTS — adjust them
+  as you get real demand data.
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project Pricing Calculator — AI Web Dev Studio</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --panel2:#1c2330; --border:#2a3342;
+    --text:#e6edf3; --muted:#9aa7b8; --accent:#3fb950; --accent2:#58a6ff;
+    --warn:#d29922; --radius:12px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Inter,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.55}
+  header{max-width:960px;margin:0 auto;padding:28px 20px 8px}
+  header h1{margin:0 0 6px;font-size:clamp(1.5rem,3.5vw,2.1rem)}
+  header p{color:var(--muted);margin:0}
+  main{max-width:960px;margin:0 auto;padding:16px 20px 60px;display:grid;gap:20px;grid-template-columns:1fr}
+  @media(min-width:860px){main{grid-template-columns:1fr 1fr}}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+  .card h2{margin:0 0 12px;font-size:1.1rem}
+  label{display:block;margin:14px 0 6px;font-weight:600}
+  small.hint{display:block;color:var(--muted);font-weight:400;margin-top:4px}
+  input[type=number]{width:100%;padding:10px 12px;border-radius:8px;border:1px solid var(--border);background:#0a0e14;color:var(--text);font-size:1rem}
+  input[type=range]{width:100%}
+  .feat{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--border);border-radius:10px;margin:8px 0;background:var(--panel2)}
+  .feat input{margin-top:4px;transform:scale(1.2)}
+  .feat b{display:block}
+  .feat span{color:var(--muted);font-size:.9rem}
+  .feat .price{margin-left:auto;white-space:nowrap;color:var(--accent);font-weight:700}
+  .row{display:flex;align-items:center;gap:10px;margin:10px 0}
+  .row input[type=checkbox]{transform:scale(1.3)}
+  table{width:100%;border-collapse:collapse;margin-top:8px;font-size:.97rem}
+  td{padding:8px 4px;border-bottom:1px dashed var(--border)}
+  td:last-child{text-align:right;white-space:nowrap}
+  tr.total td{border-bottom:none;font-size:1.25rem;font-weight:800;padding-top:12px}
+  tr.total td:last-child{color:var(--accent)}
+  .meta{color:var(--muted);font-size:.92rem;margin-top:10px}
+  .meta strong{color:var(--text)}
+  .btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+  button{cursor:pointer;border:1px solid var(--border);background:var(--panel2);color:var(--text);padding:10px 14px;border-radius:10px;font-size:.95rem}
+  button.primary{background:var(--accent);border-color:var(--accent);color:#06110a;font-weight:800}
+  button:hover{filter:brightness(1.12)}
+  #copyMsg{color:var(--accent);font-size:.9rem;min-height:1.2em}
+  footer{max-width:960px;margin:0 auto;padding:0 20px 40px;color:var(--muted);font-size:.88rem}
+  code{background:#0a0e14;padding:2px 6px;border-radius:6px;border:1px solid var(--border)}
+  .pagesVal{color:var(--accent2);font-weight:700}
+</style>
+</head>
+<body>
+<header>
+  <h1>Project Pricing Calculator</h1>
+  <p>Fill this in <strong>with the client on the scoping call</strong>. Fixed quote, itemized math, no surprises. Works offline — no internet needed.</p>
+</header>
+<main>
+  <section class="card" aria-label="Inputs">
+    <h2>1. Project scope</h2>
+
+    <label for="pages">Page count: <span class="pagesVal" id="pagesVal">4</span></label>
+    <input type="range" id="pages" min="1" max="20" value="4">
+    <small class="hint">Pages × <code id="perPageLbl">$80</code> each. Typical: 1 (landing), 4–5 (small business), 8+ (content sites).</small>
+
+    <label>Features (starting-point prices — edit in <code>&lt;script&gt;</code>)</label>
+    <div id="features"></div>
+
+    <label for="revisions">Revision rounds included (default 2)</label>
+    <input type="number" id="revisions" min="0" max="10" value="2">
+    <small class="hint">Rounds beyond the included 2 are billed at <code id="revRateLbl">$40</code> each. One round = one consolidated feedback list.</small>
+
+    <div class="row">
+      <input type="checkbox" id="rush">
+      <label for="rush" style="margin:0">Rush delivery <small class="hint" style="display:inline">(+<span id="rushPctLbl">25</span>% — client needs it faster than the standard timeline)</small></label>
+    </div>
+  </section>
+
+  <section class="card" aria-label="Quote">
+    <h2>2. Fixed quote</h2>
+    <table id="breakdown"></table>
+    <div class="meta" id="meta"></div>
+    <div class="btns">
+      <button class="primary" id="copyBtn">Copy breakdown for proposal</button>
+      <button id="resetBtn">Reset</button>
+    </div>
+    <div id="copyMsg" role="status"></div>
+    <p class="meta">Quote valid 14 days. 50% deposit to start, 50% before launch. $5 idea-call fee credited if they proceed within 14 days.</p>
+  </section>
+</main>
+<footer>
+  Base covers setup, deploy, mobile-responsive build, basic SEO + analytics, launch + handoff doc.
+  All constants are starting points at the top of the <code>&lt;script&gt;</code> — adjust as you get proof of demand.
+  Sample totals are format examples, not promises.
+</footer>
+<script>
+"use strict";
+/* ===== PRICE CONSTANTS — edit these as you get real demand data ===== */
+const BASE_PRICE = 150;        // setup, deploy, responsive build, basic SEO + analytics, handoff
+const PER_PAGE = 80;           // per page
+const INCLUDED_REVISIONS = 2;  // revision rounds included in every quote
+const EXTRA_REVISION_RATE = 40;// per extra round beyond included
+const RUSH_MULTIPLIER = 1.25;  // +25% for rush delivery
+const CALL_CREDIT_DAYS = 14;   // $5 idea-call fee credited within this window
+/* Features: starting-point prices. Toggle/rename to match YOUR offer. */
+const FEATURES = [
+  { id:"quoteform", name:"Quote / contact form", desc:"fields + email delivery + spam guard", price:60 },
+  { id:"booking",    name:"Booking / scheduling embed", desc:"Calendly-style embed + confirm page", price:90 },
+  { id:"blog",       name:"Blog / CMS section", desc:"client-editable posts + index page", price:120 },
+  { id:"ecommerce",  name:"Simple store (up to 20 products)", desc:"cart + checkout via hosted provider", price:250 },
+  { id:"copy",       name:"Copywriting polish", desc:"you tighten their draft text, 1 pass", price:80 }
+];
+/* ============================ logic ============================ */
+const $ = id => document.getElementById(id);
+const money = n => "$" + Math.round(n).toLocaleString("en-US");
+
+function buildFeatures(){
+  const box = $("features");
+  box.innerHTML = "";
+  FEATURES.forEach(f => {
+    const d = document.createElement("div");
+    d.className = "feat";
+    d.innerHTML = `<input type="checkbox" id="f_${f.id}" data-price="${f.price}" data-name="${f.name}">
+      <div><b>${f.name}</b><span>${f.desc}</span></div>
+      <span class="price">+$${f.price}</span>`;
+    box.appendChild(d);
+  });
+  box.querySelectorAll("input").forEach(el => el.addEventListener("change", render));
+}
+
+function quote(){
+  const pages = parseInt($("pages").value, 10) || 1;
+  const revs = Math.max(0, parseInt($("revisions").value, 10) || 0);
+  const lines = [{ label:`Base build (setup, deploy, SEO, analytics)`, amt:BASE_PRICE }];
+  lines.push({ label:`${pages} page${pages>1?"s":""} × ${money(PER_PAGE)}`, amt:pages*PER_PAGE });
+  document.querySelectorAll("#features input:checked").forEach(el => {
+    lines.push({ label:el.dataset.name, amt:parseFloat(el.dataset.price) });
+  });
+  const extra = Math.max(0, revs - INCLUDED_REVISIONS);
+  const inclNote = `${Math.min(revs, INCLUDED_REVISIONS)} revision round${revs===1?"":"s"}`;
+  if (extra > 0) lines.push({ label:`${extra} extra revision round${extra>1?"s":""} × ${money(EXTRA_REVISION_RATE)}`, amt:extra*EXTRA_REVISION_RATE });
+  else lines.push({ label:inclNote, amt:0, free:true });
+  let subtotal = lines.reduce((s,l)=>s+l.amt,0);
+  const rush = $("rush").checked;
+  if (rush) lines.push({ label:`Rush delivery (+${Math.round((RUSH_MULTIPLIER-1)*100)}%)`, amt:subtotal*(RUSH_MULTIPLIER-1) });
+  const total = lines.reduce((s,l)=>s+l.amt,0);
+  const deposit = total/2;
+  const days = Math.min(28, 5 + pages + document.querySelectorAll("#features input:checked").length*2 + (rush?-2:0));
+  return { pages, revs, lines, total, deposit, days, rush };
+}
+
+function render(){
+  $("pagesVal").textContent = $("pages").value;
+  const q = quote();
+  const t = $("breakdown");
+  t.innerHTML = q.lines.map(l =>
+    `<tr><td>${l.label}</td><td>${l.free?"incl.":"+"+money(l.amt)}</td></tr>`
+  ).join("") + `<tr class="total"><td>Total fixed quote</td><td>${money(q.total)}</td></tr>`;
+  $("meta").innerHTML =
+    `Deposit <strong>${money(q.deposit)}</strong> to start · balance <strong>${money(q.total-q.deposit)}</strong> before launch<br>` +
+    `Timeline: <strong>~${q.days} days</strong> from deposit + content received${q.rush?" (rush)":""}`;
+}
+
+function breakdownText(){
+  const q = quote();
+  const lines = q.lines.map(l => `- ${l.label}: ${l.free?"included":money(l.amt)}`).join("\n");
+  return `Fixed quote breakdown (valid 14 days):\n${lines}\nTotal: ${money(q.total)} (50% deposit ${money(q.deposit)} to start, 50% before launch)\nTimeline: ~${q.days} days from deposit + content received\nIncludes: ${INCLUDED_REVISIONS} revision rounds, mobile-responsive build, basic SEO + analytics, launch + handoff doc, 14-day bug-fix window.`;
+}
+
+$("pages").addEventListener("input", render);
+$("revisions").addEventListener("input", render);
+$("rush").addEventListener("change", render);
+$("copyBtn").addEventListener("click", async () => {
+  const txt = breakdownText();
+  try { await navigator.clipboard.writeText(txt); $("copyMsg").textContent = "Copied — paste into the proposal email."; }
+  catch(e){
+    const ta = document.createElement("textarea");
+    ta.value = txt; document.body.appendChild(ta); ta.select();
+    try { document.execCommand("copy"); $("copyMsg").textContent = "Copied — paste into the proposal email."; }
+    catch(_){ $("copyMsg").textContent = "Copy blocked — select the quote above manually."; }
+    ta.remove();
+  }
+  setTimeout(()=>{ $("copyMsg").textContent=""; }, 3000);
+});
+$("resetBtn").addEventListener("click", () => {
+  $("pages").value = 4; $("revisions").value = INCLUDED_REVISIONS; $("rush").checked = false;
+  document.querySelectorAll("#features input:checked").forEach(el => el.checked = false);
+  render();
+});
+
+$("perPageLbl").textContent = money(PER_PAGE);
+$("revRateLbl").textContent = money(EXTRA_REVISION_RATE);
+$("rushPctLbl").textContent = Math.round((RUSH_MULTIPLIER-1)*100);
+buildFeatures();
+render();
+</script>
+</body>
+</html>
